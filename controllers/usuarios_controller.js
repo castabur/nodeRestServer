@@ -1,41 +1,30 @@
 import { request, response } from "express";
 import { Usuario } from "../models/usuario.js"
 import bcryptjs from "bcryptjs";
-import { validationResult } from "express-validator";
 
 
-export const usuariosGet = (req = request, res = response) => {
+export const usuariosGet = async (req = request, res = response) => {
    
-   const { param1, param2 } = req.query;
+    const { from = '0', limit = '5' } = req.query;
+    const query = {estado: true}
+    const usuarios = await Usuario.find(query)
+        .limit(Number(limit))
+        .skip(Number(from))
+    
+    const total = await Usuario.countDocuments(query);
     
     res.json({
-        msg: "Get Api Usuarios", 
-        status:  "okok"
+        total: total,
+        usuarios:  usuarios
 
     })
 }
 
 export const usuariosPost = async (req = request, res = response) => {
    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            errors
-        })
-    }
-
     const {nombre, correo, password, rol} = req.body;
     const usuario = new Usuario({ nombre, correo, password, rol });
-
-    const emailExist = await Usuario.findOne({ correo: correo });
-    if (emailExist) {
-        return res.status(400).json({
-            msg: 'Este correo ya existe',
-            correo: correo,
-            cod: '400'
-        })
-    }
-    
+   
     // Validar si el correo existe
     const salt = bcryptjs.genSaltSync();
 
@@ -47,27 +36,45 @@ export const usuariosPost = async (req = request, res = response) => {
 
     console.log('Post Api call')
     res.json({
-        message: "POST Api Usuarios",
+        msg: "POST Api Usuarios",
         usuario
     });
     
 }
 
-export const usuariosPut = (req, res = response) => {
+export const usuariosPut = async (req, res = response) => {
     
-    const id = req.params.id;
-        
+    const { id } = req.params;
+    
+    const { _id, password, correo, google, ...resto } = req.body;
+    
+    if (password) {
+        // Validar si el correo existe
+        const salt = bcryptjs.genSaltSync();
+        // Hash Contraseña
+        resto.password = bcryptjs.hashSync(password, salt);     
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(id, resto, { new: true});
+
     res.json({
         msg: 'Put Rest api',
         id: id,
-        status: 'ok??'
+        usuario
     })
 }
 
-export const usuariosDelete = (req, res = response) => {
+export const usuariosDelete = async (req, res = response) => {
+   
+    const { id } = req.query;
+    const update = {estado: false}
+    
+    const usuario = await Usuario.findByIdAndUpdate(id, update, {new: true})
+
     res.json({
         msg: 'Delete Rest api',
-        status: 'ok'
+        status: 'ok', 
+        usuario
     })
 }
 

@@ -28,7 +28,15 @@ const UsuarioSchema = new mongo.Schema({
     },
     google: {
         type: Boolean,
+        default: false
     }
 });
+
+//Sobre-esribir metodo toJSON de mongoose
+UsuarioSchema.methods.toJSON = function () {
+    // Se saca __v y password y se almacena el resto en usuario
+    const { __v, password, ...usuario } = this.toObject();
+    return usuario;
+}
 
 export const Usuario = mongo.model('Usuario', UsuarioSchema);
