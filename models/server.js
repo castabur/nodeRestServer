@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { router } from '../routes/usuarios_routes.js';
+import { dbConnection } from '../database/config.js';
 
 export class Server{
 
@@ -11,12 +12,18 @@ export class Server{
         //rutas de la app
         this.usuariosPath = '/api/usuarios';
 
+        //Conectar a BBDD
+        this.connectarDB();
+
         //middlewares
         this.middlewares();
-        
 
         // lanzamos las rutas
         this.routes();
+    }
+
+    async connectarDB() {
+        await dbConnection();
     }
 
     middlewares() {
