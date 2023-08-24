@@ -1,7 +1,9 @@
 import express from 'express'
 import cors from 'cors'
-import { router } from '../routes/usuarios_routes.js';
 import { dbConnection } from '../database/config.js';
+
+import { router } from '../routes/usuarios_routes.js';
+import { routerAuth } from '../routes/auth_routes.js';
 
 export class Server{
 
@@ -10,7 +12,9 @@ export class Server{
         this.port = process.env.PORT;
 
         //rutas de la app
+        this.authPath     = '/api/auth';
         this.usuariosPath = '/api/usuarios';
+        
 
         //Conectar a BBDD
         this.connectarDB();
@@ -42,6 +46,7 @@ export class Server{
 
     // rutas del server
     routes() {
+        this.app.use(this.authPath, routerAuth);
         this.app.use(this.usuariosPath, router);
     }
 

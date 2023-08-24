@@ -1,9 +1,11 @@
-import { Router } from 'express'
-import  * as usuarioController from '../controllers/usuarios_controller.js';
-import { check } from 'express-validator';
-import { validaCampos } from '../middlewares/validar_campos.js';
-import * as dbValidators from '../helpers/db_validators.js';
+import { Router }   from 'express'
+import { check }    from 'express-validator';
 
+import  * as usuarioController  from '../controllers/usuarios_controller.js';
+import * as dbValidators        from '../helpers/db_validators.js';
+import { validaCampos }         from '../middlewares/validar_campos.js';
+import { validarJWT }           from '../middlewares/validar_jwt.js';
+import {esAdminRole,tieneRoles} from '../middlewares/validar_roles.js';
 
 export const router = Router();
 
@@ -13,7 +15,6 @@ router.put('/:id', [
     check('id', 'No es un id válido').isMongoId(),
     check('id', 'Id ya existe').custom(dbValidators.userIdExist),
     check('rol').custom( rol => dbValidators.esRolValido (rol)),
-    
     validaCampos
 ],usuarioController.usuariosPut);
 
@@ -31,8 +32,13 @@ router.post('/', [
 ] , usuarioController.usuariosPost);
 
 router.delete('/', [
+    validarJWT,
+    //esAdminRole,
+    // es una funcion.. que se ejecuta antes de retornar el middleware en si
+    tieneRoles('USER_ROLE', 'ADMIN_ROLE'),  
     check('id', 'No es un Id válido').isMongoId(),
     validaCampos
 ], usuarioController.usuariosDelete);
+
 
 router.patch('/', usuarioController.usuariosPatch);

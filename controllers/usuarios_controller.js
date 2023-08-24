@@ -1,5 +1,5 @@
 import { request, response } from "express";
-import { Usuario } from "../models/usuario.js"
+import { Usuario } from "../models/usuario.js";
 import bcryptjs from "bcryptjs";
 
 
@@ -69,12 +69,14 @@ export const usuariosDelete = async (req, res = response) => {
     const { id } = req.query;
     const update = {estado: false}
     
-    const usuario = await Usuario.findByIdAndUpdate(id, update, {new: true})
-
+    const usuario = await Usuario.findByIdAndUpdate(id, update, { new: true })
+    const  usuarioAdmin  = req.usuarioAdmin
+    
     res.json({
         msg: 'Delete Rest api',
         status: 'ok', 
-        usuario
+        usuario, 
+        usuarioAdmin
     })
 }
 

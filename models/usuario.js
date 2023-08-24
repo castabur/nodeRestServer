@@ -24,7 +24,7 @@ const UsuarioSchema = new mongo.Schema({
     },
     estado: {
         type: Boolean,
-        default: false
+        default: true
     },
     google: {
         type: Boolean,
@@ -35,7 +35,8 @@ const UsuarioSchema = new mongo.Schema({
 //Sobre-esribir metodo toJSON de mongoose
 UsuarioSchema.methods.toJSON = function () {
     // Se saca __v y password y se almacena el resto en usuario
-    const { __v, password, ...usuario } = this.toObject();
+    const { __v, _id, password, ...usuario } = this.toObject();
+    usuario.uid = _id;
     return usuario;
 }
 
