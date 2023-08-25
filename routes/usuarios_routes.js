@@ -1,11 +1,11 @@
 import { Router }   from 'express'
 import { check }    from 'express-validator';
 
-import  * as usuarioController  from '../controllers/usuarios_controller.js';
+import * as usuarioController   from '../controllers/usuarios_controller.js';
 import * as dbValidators        from '../helpers/db_validators.js';
 import { validaCampos }         from '../middlewares/validar_campos.js';
 import { validarJWT }           from '../middlewares/validar_jwt.js';
-import {esAdminRole,tieneRoles} from '../middlewares/validar_roles.js';
+import { tieneRoles }           from '../middlewares/validar_roles.js';
 
 export const router = Router();
 
